@@ -1,24 +1,53 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import Dashboard from './pages/Dashboard';
+import ProductsPage from './pages/ProductsPage';
 import './App.css';
 
 function App() {
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const handleLogin = (user) => {
+    setCurrentUser(user);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route 
+            path="/login" 
+            element={
+              currentUser ? 
+              <Navigate to="/dashboard" /> : 
+              <LoginPage onLogin={handleLogin} />
+            } 
+          />
+          <Route 
+            path="/dashboard" 
+            element={
+              currentUser ? 
+              <Dashboard user={currentUser} onLogout={handleLogout} /> : 
+              <Navigate to="/login" />
+            } 
+          />
+          <Route 
+            path="/products" 
+            element={
+              currentUser ? 
+              <ProductsPage user={currentUser} onLogout={handleLogout} /> : 
+              <Navigate to="/login" />
+            } 
+          />
+          <Route path="/" element={<Navigate to="/login" />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
