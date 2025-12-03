@@ -1,50 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
+import Login from './components/Login/Login';
 import Dashboard from './pages/Dashboard';
-import ProductsPage from './pages/ProductsPage';
 import './App.css';
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('appTheme') || 'light';
+  });
 
-  const handleLogin = (user) => {
-    setCurrentUser(user);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('appTheme', newTheme);
   };
 
-  const handleLogout = () => {
-    setCurrentUser(null);
-  };
+  // Слушаем изменения localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Проверяем каждую секунду (для отладки)
+    const interval = setInterval(() => {
+      const authStatus = localStorage.getItem('isAuthenticated') === 'true';
+      if (authStatus !== isAuthenticated) {
+        setIsAuthenticated(authStatus);
+      }
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [isAuthenticated]);
+
+  console.log('App render - isAuthenticated:', isAuthenticated);
 
   return (
     <Router>
-      <div className="App">
+      <div className="App" data-theme={theme}>
         <Routes>
           <Route 
             path="/login" 
             element={
-              currentUser ? 
-              <Navigate to="/dashboard" /> : 
-              <LoginPage onLogin={handleLogin} />
+              isAuthenticated ? 
+              <Navigate to="/dashboard" replace /> : 
+              <Login theme={theme} />
             } 
           />
           <Route 
             path="/dashboard" 
             element={
-              currentUser ? 
-              <Dashboard user={currentUser} onLogout={handleLogout} /> : 
-              <Navigate to="/login" />
+              isAuthenticated ? 
+              <Dashboard theme={theme} toggleTheme={toggleTheme} /> : 
+              <Navigate to="/login" replace />
             } 
           />
           <Route 
             path="/products" 
             element={
-              currentUser ? 
-              <ProductsPage user={currentUser} onLogout={handleLogout} /> : 
-              <Navigate to="/login" />
+              isAuthenticated ? 
+              <div style={{ padding: '50px', textAlign: 'center' }}>
+                <h2>Страница товаров</h2>
+                <p>Скоро здесь будет управление товарами</p>
+              </div> : 
+              <Navigate to="/login" replace />
             } 
           />
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
     </Router>

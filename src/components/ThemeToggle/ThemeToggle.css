@@ -1,0 +1,42 @@
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.1);
+    color: #333;
+  }
+  
+  [data-theme="dark"] .theme-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+  
+  .theme-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .theme-icon {
+    font-size: 16px;
+  }
+  
+  .theme-text {
+    white-space: nowrap;
+  }
+  
+  @media (max-width: 768px) {
+    .theme-text {
+      display: none;
+    }
+    
+    .theme-toggle {
+      padding: 8px 12px;
+    }
+  }
