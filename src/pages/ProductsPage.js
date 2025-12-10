@@ -12,11 +12,16 @@ import ProductCard from '../components/ProductCard/ProductCard';
 import ProductForm from '../components/ProductForm/ProductForm';
 import './ProductsPage.css';
 
-const ProductsPage = ({ user, onLogout }) => {
+const ProductsPage = ({ user, onLogout, theme, themeColors }) => {
   const dispatch = useDispatch();
+  
+  // Получаем данные из Redux store
   const { products, editingProduct } = useSelector(state => state.products);
+  
   const [viewMode, setViewMode] = useState('table');
   const [showForm, setShowForm] = useState(false);
+
+  const colors = themeColors;
 
   const handleDelete = (productId) => {
     dispatch(deleteProduct(productId));
@@ -29,10 +34,10 @@ const ProductsPage = ({ user, onLogout }) => {
 
   const handleAddProduct = (newProduct) => {
     if (editingProduct) {
-      // Update existing product
+     
       dispatch(updateProduct({ ...newProduct, id: editingProduct.id }));
     } else {
-      // Add new product
+      
       dispatch(addProduct({ ...newProduct, id: Date.now() }));
     }
     setShowForm(false);
@@ -45,7 +50,9 @@ const ProductsPage = ({ user, onLogout }) => {
 
   return (
     <div className="products-page">
-      <header className="products-header">
+      <header className="products-header" style={{ 
+        background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)` 
+      }}>
         <div className="header-content">
           <Link to="/dashboard" className="back-button">← Назад</Link>
           <h1>Управление товарами</h1>
@@ -58,18 +65,26 @@ const ProductsPage = ({ user, onLogout }) => {
         </div>
       </header>
 
-      <main className="products-main">
+      <main className="products-main" style={{ backgroundColor: colors.background }}>
         <div className="products-controls">
           <div className="view-toggle">
             <button 
               className={`toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
               onClick={() => setViewMode('table')}
+              style={{
+                backgroundColor: viewMode === 'table' ? colors.surface : 'transparent',
+                color: viewMode === 'table' ? colors.text : colors.textSecondary
+              }}
             >
               Таблица
             </button>
             <button 
               className={`toggle-btn ${viewMode === 'cards' ? 'active' : ''}`}
               onClick={() => setViewMode('cards')}
+              style={{
+                backgroundColor: viewMode === 'cards' ? colors.surface : 'transparent',
+                color: viewMode === 'cards' ? colors.text : colors.textSecondary
+              }}
             >
               Карточки
             </button>
@@ -78,6 +93,9 @@ const ProductsPage = ({ user, onLogout }) => {
           <button 
             className="add-product-btn"
             onClick={() => setShowForm(true)}
+            style={{ 
+              background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)` 
+            }}
           >
             + Добавить товар
           </button>
@@ -88,6 +106,7 @@ const ProductsPage = ({ user, onLogout }) => {
             product={editingProduct}
             onSubmit={handleAddProduct}
             onCancel={handleCancelForm}
+            themeColors={colors}
           />
         )}
 
@@ -96,6 +115,7 @@ const ProductsPage = ({ user, onLogout }) => {
             products={products}
             onDelete={handleDelete}
             onEdit={handleEdit}
+            themeColors={colors}
           />
         ) : (
           <div className="products-grid">
@@ -105,6 +125,7 @@ const ProductsPage = ({ user, onLogout }) => {
                 product={product}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
+                themeColors={colors}
               />
             ))}
           </div>

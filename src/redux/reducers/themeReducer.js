@@ -1,7 +1,6 @@
 import { TOGGLE_THEME, SET_THEME } from '../actions/themeActions';
-const savedTheme = localStorage.getItem('appTheme') || 'light';
 const initialState = {
-  currentTheme: 'light', // 'light' или 'dark'
+  currentTheme: localStorage.getItem('appTheme') || 'light',
   themes: {
     light: {
       name: 'light',
@@ -40,12 +39,14 @@ const themeReducer = (state = initialState, action) => {
   switch (action.type) {
     case TOGGLE_THEME:
       const newTheme = state.currentTheme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('appTheme', newTheme);
       return {
         ...state,
         currentTheme: newTheme
       };
     
     case SET_THEME:
+      localStorage.setItem('appTheme', action.payload);
       return {
         ...state,
         currentTheme: action.payload
