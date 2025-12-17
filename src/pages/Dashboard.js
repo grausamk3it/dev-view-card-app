@@ -2,13 +2,26 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme } from '../redux/actions/themeActions';
-import ThemeToggle from '../components/ThemeToggle/ThemeToggle';
-import './Dashboard.css';
+import MUIThemeToggle from '../components/MUIThemeToggle/MUIThemeToggle';
 
-const Dashboard = ({ user, onLogout, theme, themeColors }) => {
+// MUI компоненты
+import { 
+  Container, 
+  Paper, 
+  Typography, 
+  Grid, 
+  Card, 
+  CardContent,
+  CardActions,
+  Button,
+  Box
+} from '@mui/material';
+
+const Dashboard = ({ user, onLogout, theme }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  
+  // Получаем продукты из Redux store
   const { products } = useSelector(state => state.products);
 
   const handleToggleTheme = () => {
@@ -20,93 +33,179 @@ const Dashboard = ({ user, onLogout, theme, themeColors }) => {
     return null;
   }
 
-  const colors = themeColors;
-
   return (
-    <div className="dashboard">
-      <header className="dashboard-header" style={{ 
-        background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)` 
-      }}>
-        <div className="header-content">
-          <h1>🖥️ Магазин компьютерной техники</h1>
-          <div className="header-controls">
-            <ThemeToggle 
-              theme={theme} 
-              toggleTheme={handleToggleTheme} 
-              colors={colors}
-            />
-            <div className="user-info">
-              <span>Добро пожаловать, {user.name}!</span>
-              <button onClick={onLogout} className="logout-btn">
-                Выйти
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      {/* Шапка */}
+      <Paper 
+        elevation={3} 
+        sx={{ 
+          p: 2, 
+          mb: 3,
+          background: `linear-gradient(135deg, ${theme === 'light' ? '#667eea' : '#7c93e0'} 0%, ${theme === 'light' ? '#764ba2' : '#9b6bd4'} 100%)`,
+          color: 'white'
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Typography variant="h4" component="h1">
+              🖥️ Магазин компьютерной техники
+            </Typography>
+            
+            <Box display="flex" alignItems="center" gap={2}>
+              <MUIThemeToggle 
+                theme={theme}
+                toggleTheme={handleToggleTheme}
+              />
+              
+              <Box display="flex" alignItems="center" gap={2}>
+                <Typography variant="body1">
+                  Добро пожаловать, {user.name}!
+                </Typography>
+                <Button 
+                  variant="outlined" 
+                  onClick={onLogout}
+                  sx={{ 
+                    color: 'white', 
+                    borderColor: 'rgba(255,255,255,0.3)',
+                    '&:hover': {
+                      borderColor: 'rgba(255,255,255,0.5)',
+                      backgroundColor: 'rgba(255,255,255,0.1)'
+                    }
+                  }}
+                >
+                  Выйти
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        </Container>
+      </Paper>
 
-      <main className="dashboard-main" style={{ backgroundColor: colors.background }}>
-        <div className="welcome-section" style={{ 
-          backgroundColor: colors.surface, 
-          color: colors.text,
-          border: `1px solid ${colors.border}`
-        }}>
-          <h2>Панель управления</h2>
-          <p>Управление товарами компьютерной техники</p>
-          <div className="stats-info">
-            <p>Всего товаров в каталоге: <strong>{products.length}</strong></p>
-          </div>
-          <div className="currency-info" style={{ color: colors.textSecondary }}>
-            Все цены указаны в белорусских рублях (BYN)
-          </div>
-          <div className="theme-info" style={{ color: colors.textSecondary, marginTop: '10px' }}>
-            Текущая тема: <strong>{theme === 'light' ? 'Светлая' : 'Темная'}</strong>
-          </div>
-        </div>
-
-        <div className="nav-cards">
-          <Link to="/products" className="nav-card" style={{ 
-            backgroundColor: colors.surface, 
-            color: colors.text,
-            border: `1px solid ${colors.border}`
-          }}>
-            <div className="card-icon">🖥️</div>
-            <h3>Управление товарами</h3>
-            <p style={{ color: colors.textSecondary }}>Просмотр, добавление и редактирование товаров</p>
-          </Link>
+      {/* Основной контент */}
+      <Container maxWidth="lg">
+        {/* Приветственная секция */}
+        <Paper 
+          elevation={2} 
+          sx={{ 
+            p: 4, 
+            mb: 4, 
+            textAlign: 'center',
+            bgcolor: 'background.paper'
+          }}
+        >
+          <Typography variant="h3" component="h2" gutterBottom>
+            Панель управления
+          </Typography>
+          <Typography variant="h6" color="text.secondary" paragraph>
+            Управление товарами компьютерной техники
+          </Typography>
           
-          <div className="nav-card" style={{ 
-            backgroundColor: colors.surface, 
-            color: colors.text,
-            border: `1px solid ${colors.border}`
-          }}>
-            <div className="card-icon">📊</div>
-            <h3>Статистика продаж</h3>
-            <p style={{ color: colors.textSecondary }}>Аналитика продаж и популярности товаров</p>
-          </div>
+          <Box mt={2}>
+            <Typography variant="body1" color="text.secondary">
+              Всего товаров в каталоге: <strong>{products.length}</strong>
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Все цены указаны в белорусских рублях (BYN)
+            </Typography>
+            <Typography variant="body2" color="text.secondary" mt={1}>
+              Текущая тема: <strong>{theme === 'light' ? 'Светлая' : 'Темная'}</strong>
+            </Typography>
+          </Box>
+        </Paper>
 
-          <div className="nav-card" style={{ 
-            backgroundColor: colors.surface, 
-            color: colors.text,
-            border: `1px solid ${colors.border}`
-          }}>
-            <div className="card-icon">👥</div>
-            <h3>Управление клиентами</h3>
-            <p style={{ color: colors.textSecondary }}>База клиентов, история заказов</p>
-          </div>
+        {/* Карточки навигации */}
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h1" component="div" gutterBottom>
+                  🖥️
+                </Typography>
+                <Typography variant="h5" component="h3" gutterBottom>
+                  Управление товарами
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Просмотр, добавление и редактирование товаров
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button 
+                  fullWidth 
+                  component={Link} 
+                  to="/products"
+                  variant="contained"
+                >
+                  Перейти
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
 
-          <div className="nav-card" style={{ 
-            backgroundColor: colors.surface, 
-            color: colors.text,
-            border: `1px solid ${colors.border}`
-          }}>
-            <div className="card-icon">📦</div>
-            <h3>Заказы и доставка</h3>
-            <p style={{ color: colors.textSecondary }}>Обработка заказов, отслеживание доставки</p>
-          </div>
-        </div>
-      </main>
-    </div>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h1" component="div" gutterBottom>
+                  📊
+                </Typography>
+                <Typography variant="h5" component="h3" gutterBottom>
+                  Статистика продаж
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Аналитика продаж и популярности товаров
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button fullWidth variant="contained" disabled>
+                  Скоро
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h1" component="div" gutterBottom>
+                  👥
+                </Typography>
+                <Typography variant="h5" component="h3" gutterBottom>
+                  Управление клиентами
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  База клиентов, история заказов
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button fullWidth variant="contained" disabled>
+                  Скоро
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h1" component="div" gutterBottom>
+                  📦
+                </Typography>
+                <Typography variant="h5" component="h3" gutterBottom>
+                  Заказы и доставка
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Обработка заказов, отслеживание доставки
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button fullWidth variant="contained" disabled>
+                  Скоро
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 };
 

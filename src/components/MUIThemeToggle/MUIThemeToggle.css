@@ -1,0 +1,17 @@
+.mui-theme-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  @media (max-width: 600px) {
+    .mui-theme-controls {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+  }

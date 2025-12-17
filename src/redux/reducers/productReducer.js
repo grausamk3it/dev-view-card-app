@@ -10,7 +10,7 @@ import {
 const initialProducts = [
   {
     id: 1,
-    name: 'Игровой компьютер ASUS ROG',
+    name: 'sdsdsdsdd',
     category: 'Компьютеры',
     price: 5400,
     stock: 1,

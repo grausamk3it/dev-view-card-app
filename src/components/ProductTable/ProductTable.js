@@ -1,4 +1,9 @@
 import React from 'react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import ErrorIcon from '@mui/icons-material/Error';
+import WarningIcon from '@mui/icons-material/Warning';
 import './ProductTable.css';
 
 const ProductTable = ({ products, onDelete, onEdit, themeColors }) => {
@@ -43,10 +48,57 @@ const ProductTable = ({ products, onDelete, onEdit, themeColors }) => {
               <td>{product.id}</td>
               <td>{product.name}</td>
               <td>{product.category}</td>
-              <td className="price-cell" style={{ color: colors.success || '#2c5530' }}>
-                {formatPrice(product.price)} BYN
+              <td>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Typography 
+                    fontWeight="bold"
+                    style={{ color: product.price <= 0 ? colors.error || '#d32f2f' : colors.success || '#2c5530' }}
+                  >
+                    {formatPrice(product.price)} BYN
+                  </Typography>
+                  {product.price <= 0 && (
+                    <Tooltip title="Некорректная цена">
+                      <ErrorIcon 
+                        fontSize="small" 
+                        style={{ color: colors.error || '#d32f2f' }} 
+                      />
+                    </Tooltip>
+                  )}
+                  {product.price > 1000000 && (
+                    <Tooltip title="Цена слишком высокая">
+                      <WarningIcon 
+                        fontSize="small" 
+                        style={{ color: colors.warning || '#ed6c02' }} 
+                      />
+                    </Tooltip>
+                  )}
+                </Box>
               </td>
-              <td>{product.stock} шт.</td>
+              <td>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Typography 
+                    style={{ color: product.stock < 5 ? colors.error || '#d32f2f' : colors.text }}
+                  >
+                    {product.stock} шт.
+                  </Typography>
+                  {product.stock < 10 && product.stock > 0 && (
+                    <Tooltip title="Мало на складе">
+                      <WarningIcon 
+                        fontSize="small" 
+                        style={{ color: colors.warning || '#ed6c02' }} 
+                      />
+                    </Tooltip>
+                  )}
+                  {product.stock === 0 && (
+                    <Tooltip title="Нет в наличии">
+                      <ErrorIcon 
+                        fontSize="small" 
+                        style={{ color: colors.error || '#d32f2f' }} 
+                      />
+                    </Tooltip>
+                  )}
+                </Box>
+              </td>
               <td>{product.description}</td>
               <td className="actions">
                 <button 

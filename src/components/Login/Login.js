@@ -2,7 +2,19 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { loginUser } from '../../redux/actions/userActions';
-import './Login.css';
+
+// MUI компоненты
+import { 
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Alert,
+  Card,
+  CardContent
+} from '@mui/material';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,14 +22,11 @@ const Login = () => {
   
   // Получаем пользователей из Redux store
   const { users } = useSelector(state => state.user);
-  const { currentTheme, themes } = useSelector(state => state.theme);
   
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const colors = themes[currentTheme].colors;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -27,19 +36,14 @@ const Login = () => {
     setError('');
 
     setTimeout(() => {
-      // Ищем пользователя в массиве из Redux store
       const user = users.find(u => 
         u.username === username && u.password === password
       );
       
       if (user) {
-        // Диспатчим действие loginUser
         dispatch(loginUser(user));
-        
-        // Сохраняем в localStorage для persistence
         localStorage.setItem('currentUser', JSON.stringify(user));
         localStorage.setItem('isAuthenticated', 'true');
-        
         navigate('/dashboard');
       } else {
         setError('Неверное имя пользователя или пароль');
@@ -50,75 +54,96 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container" style={{ 
-      background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`
-    }}>
-      <div className="login-form" style={{ 
-        backgroundColor: colors.surface, 
-        color: colors.text
-      }}>
-        <h2>Вход в систему</h2>
-        <p className="subtitle" style={{ color: colors.textSecondary }}>
-          Магазин компьютерной техники
-        </p>
-        
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="form-group">
-            <label style={{ color: colors.text }}>Имя пользователя:</label>
-            <input
-              type="text"
+    <Container 
+      maxWidth="sm" 
+      sx={{ 
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        py: 4
+      }}
+    >
+      <Card sx={{ width: '100%', maxWidth: 400 }}>
+        <CardContent sx={{ p: 4 }}>
+          <Typography variant="h4" component="h1" align="center" gutterBottom>
+            Вход в систему
+          </Typography>
+          
+          <Typography variant="subtitle1" align="center" color="text.secondary" gutterBottom>
+            Магазин компьютерной техники
+          </Typography>
+
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Имя пользователя"
+              name="username"
+              autoComplete="username"
+              autoFocus
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              required
               disabled={loading}
-              style={{ 
-                borderColor: colors.border,
-                backgroundColor: colors.background,
-                color: colors.text
-              }}
-              placeholder="Введите имя пользователя"
             />
-          </div>
-          
-          <div className="form-group">
-            <label style={{ color: colors.text }}>Пароль:</label>
-            <input
+            
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Пароль"
               type="password"
+              id="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
               disabled={loading}
-              style={{ 
-                borderColor: colors.border,
-                backgroundColor: colors.background,
-                color: colors.text
-              }}
-              placeholder="Введите пароль"
             />
-          </div>
-          
-          {error && (
-            <div className="error" style={{ 
-              backgroundColor: colors.error + '20', 
-              color: colors.error 
-            }}>
-              {error}
-            </div>
-          )}
-          
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="login-btn"
-            style={{ 
-              background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)` 
+
+            {error && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {error}
+              </Alert>
+            )}
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={loading}
+              sx={{ mt: 3, mb: 2, py: 1.5 }}
+            >
+              {loading ? 'Вход...' : 'Войти'}
+            </Button>
+          </Box>
+
+          <Paper 
+            variant="outlined" 
+            sx={{ 
+              mt: 3, 
+              p: 2,
+              bgcolor: 'background.default'
             }}
           >
-            {loading ? 'Вход...' : 'Войти'}
-          </button>
-        </form>
-      </div>
-    </div>
+            <Typography variant="subtitle2" align="center" gutterBottom>
+              Тестовые аккаунты:
+            </Typography>
+            <Typography variant="body2" align="center" color="text.secondary">
+              <strong>admin</strong> / admin123
+            </Typography>
+            <Typography variant="body2" align="center" color="text.secondary">
+              <strong>manager</strong> / manager123
+            </Typography>
+            <Typography variant="body2" align="center" color="text.secondary">
+              <strong>user</strong> / user123
+            </Typography>
+          </Paper>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 
